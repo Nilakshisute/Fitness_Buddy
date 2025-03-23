@@ -1,18 +1,8 @@
 import React from 'react';
-import { useState } from 'react';
-import { User, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { User, MessageCircle } from 'lucide-react';
 
 const HomePage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
-
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
@@ -23,136 +13,66 @@ const HomePage = () => {
               <span className="font-bold text-xl">FitnessBuddy</span>
             </div>
             <div className="flex items-center space-x-4">
-              {isLoggedIn ? (
-                <button 
-                  onClick={handleLogout}
-                  className="flex items-center px-3 py-2 rounded hover:bg-blue-700 transition"
-                >
-                  <LogOut className="mr-1 h-5 w-5" />
-                  Logout
-                </button>
-              ) : (
-                <button 
-                  onClick={handleLogin}
-                  className="flex items-center px-3 py-2 rounded hover:bg-blue-700 transition"
-                >
-                  <User className="mr-1 h-5 w-5" />
-                  Login
-                </button>
-              )}
+              <Link to="/profile" className="flex items-center px-3 py-2 rounded hover:bg-blue-700 transition">
+                <User className="mr-1 h-5 w-5" />
+                Profile
+              </Link>
+              <Link to="/buddychat" className="flex items-center px-3 py-2 rounded hover:bg-blue-700 transition">
+                <MessageCircle className="mr-1 h-5 w-5" />
+                Buddy Chat
+              </Link>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="relative pt-16 pb-32 flex content-center items-center justify-center">
-        <div className="bg-cover bg-center absolute top-0 w-full h-full" 
-             style={{
-               backgroundImage: "url('/api/placeholder/800/400')",
-               filter: "brightness(0.7)"
-             }}>
-        </div>
-        <div className="container relative mx-auto">
-          <div className="items-center flex flex-wrap">
-            <div className="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
-              <div className="pr-12">
-                <h1 className="text-white font-bold text-5xl">
-                  Your Fitness Journey Starts Here
-                </h1>
-                <p className="mt-4 text-lg text-gray-200">
-                  Track workouts, monitor progress, and achieve your fitness goals with FitnessBuddy.
-                </p>
-                <button className="mt-8 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition">
-                  Get Started
-                </button>
-              </div>
-            </div>
+      <div className="relative bg-cover bg-center h-[500px] flex items-center justify-center text-center" 
+           style={{ backgroundImage: "url('/api/placeholder/800/400')" }}>
+        <div className="bg-black bg-opacity-60 w-full h-full flex flex-col items-center justify-center px-4">
+          <h1 className="text-white text-5xl font-bold">Find Your Perfect Workout Buddy</h1>
+          <p className="text-gray-200 mt-4 text-lg">Achieve your fitness goals together!</p>
+          <div className="mt-8 flex space-x-4">
+            <Link to="/profile" className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+              Create Profile
+            </Link>
+            <Link to="/buddychat" className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
+              Connect with Buddies
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
+      {/* Featured Buddies Section */}
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap">
-            <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">
-              <div className="bg-blue-100 p-6 rounded-lg shadow-lg">
-                <div className="text-blue-600 p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 rounded-full bg-blue-200">
-                  <i className="text-xl">🏋️</i>
+          <h2 className="text-3xl font-bold text-center mb-8">Featured Workout Buddies</h2>
+          <div className="flex flex-wrap justify-center">
+            {/* Buddy Cards */}
+            {['John', 'Lisa', 'Michael', 'Emily'].map((buddy, index) => (
+              <div key={index} className="w-full sm:w-1/2 md:w-1/4 px-4 mb-8">
+                <div className="bg-gray-100 rounded-lg shadow-lg overflow-hidden">
+                  <img
+                    src={`/api/placeholder/200/200?name=${buddy}`}
+                    alt={buddy}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6 text-center">
+                    <h3 className="text-xl font-bold">{buddy}</h3>
+                    <p className="text-gray-600 mt-2">Fitness Goal: Build Muscle</p>
+                    <Link
+                      to="/buddychat"
+                      className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    >
+                      Message Now
+                    </Link>
+                  </div>
                 </div>
-                <h5 className="text-xl font-bold">Workout Plans</h5>
-                <p className="mt-2 mb-4 text-gray-600">
-                  Access personalized workout plans designed for your fitness level and goals.
-                </p>
               </div>
-            </div>
-
-            <div className="w-full md:w-4/12 px-4 text-center">
-              <div className="bg-green-100 p-6 rounded-lg shadow-lg">
-                <div className="text-green-600 p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 rounded-full bg-green-200">
-                  <i className="text-xl">📊</i>
-                </div>
-                <h5 className="text-xl font-bold">Progress Tracking</h5>
-                <p className="mt-2 mb-4 text-gray-600">
-                  Track your progress with detailed metrics and visual charts.
-                </p>
-              </div>
-            </div>
-
-            <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">
-              <div className="bg-purple-100 p-6 rounded-lg shadow-lg">
-                <div className="text-purple-600 p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 rounded-full bg-purple-200">
-                  <i className="text-xl">🥗</i>
-                </div>
-                <h5 className="text-xl font-bold">Nutrition Guidance</h5>
-                <p className="mt-2 mb-4 text-gray-600">
-                  Get nutrition tips and meal plans to complement your workout routine.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
-
-      {/* Workout Stats Section (Dummy Data) */}
-      {isLoggedIn && (
-        <section className="py-20 bg-gray-100">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Your Fitness Dashboard</h2>
-            <div className="flex flex-wrap">
-              <div className="w-full md:w-6/12 lg:w-3/12 px-4 mb-8">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <h3 className="text-xl font-bold mb-2">Workouts This Week</h3>
-                  <p className="text-4xl font-bold text-blue-600">4</p>
-                  <p className="text-sm text-gray-500">+2 from last week</p>
-                </div>
-              </div>
-              <div className="w-full md:w-6/12 lg:w-3/12 px-4 mb-8">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <h3 className="text-xl font-bold mb-2">Total Minutes</h3>
-                  <p className="text-4xl font-bold text-green-600">186</p>
-                  <p className="text-sm text-gray-500">+42 from last week</p>
-                </div>
-              </div>
-              <div className="w-full md:w-6/12 lg:w-3/12 px-4 mb-8">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <h3 className="text-xl font-bold mb-2">Calories Burned</h3>
-                  <p className="text-4xl font-bold text-orange-600">1,450</p>
-                  <p className="text-sm text-gray-500">+320 from last week</p>
-                </div>
-              </div>
-              <div className="w-full md:w-6/12 lg:w-3/12 px-4 mb-8">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <h3 className="text-xl font-bold mb-2">Current Streak</h3>
-                  <p className="text-4xl font-bold text-purple-600">6 days</p>
-                  <p className="text-sm text-gray-500">Keep it up!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-8">
