@@ -1,106 +1,110 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+import { db } from "../firebase/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 const Profile = () => {
-  const [goal, setGoal] = useState('');
-  const [customGoal, setCustomGoal] = useState('');
-  const [description, setDescription] = useState('');
-  const [matchedBuddies, setMatchedBuddies] = useState([]);
-  const [error, setError] = useState('');
+  const [profile, setProfile] = useState({
+    name: "",
+    location: "",
+    goals: "",
+    preferences: [],
+    description: "",
+  });
 
-  const fitnessGoals = [
-    'Lose Weight',
-    'Build Muscle',
-    'Increase Stamina',
-    'Improve Flexibility',
-    'Custom Goal'
-  ];
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfile({ ...profile, [name]: value });
+  };
 
-  const handleMatch = () => {
-    if (!goal) {
-      setError('Please select a fitness goal.');
-      return;
+  const handlePreferences = (e) => {
+    const { value, checked } = e.target;
+    setProfile((prev) =>
+      checked
+        ? { ...prev, preferences: [...prev.preferences, value] }
+        : { ...prev, preferences: prev.preferences.filter((pref) => pref !== value) }
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await addDoc(collection(db, "profiles"), profile);
+      alert("Profile Created Successfully!");
+    } catch (error) {
+      console.error("Error creating profile: ", error);
     }
-    if (goal === 'Custom Goal' && !customGoal.trim()) {
-      setError('Please enter your custom fitness goal.');
-      return;
-    }
-
-    setError('');
-    const buddyList = ['John', 'Lisa', 'Michael', 'Emily']; // Mock matched buddies
-    setMatchedBuddies(buddyList);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex justify-center items-center px-4">
-      <div className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">Create Your Profile</h2>
-
-        {/* Goal Selection */}
-        <label className="block text-lg font-medium mb-2">Select Your Fitness Goal</label>
-        <select
-          value={goal}
-          onChange={(e) => setGoal(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="" disabled>Select a goal...</option>
-          {fitnessGoals.map((g, index) => (
-            <option key={index} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
-
-        {/* Custom Goal Input */}
-        {goal === 'Custom Goal' && (
-          <input
-            type="text"
-            placeholder="Enter your custom fitness goal"
-            value={customGoal}
-            onChange={(e) => setCustomGoal(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        )}
-
-        {/* Description Box */}
-        <label className="block text-lg font-medium mb-2">Add a Description (Optional)</label>
-        <textarea
-          rows="4"
-          placeholder="Describe your fitness journey or preferences..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+      <div className="mb-4">
+        <label className="block text-sm font-semibold">Name</label>
+        <input
+          type="text"
+          name="name"
+          value={profile.name}
+          onChange={handleChange}
+          className="w-full p-2 border rounded-lg"
+          required
         />
-
-        {/* Error Message */}
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-
-        {/* Submit Button */}
-        <button
-          onClick={handleMatch}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
-        >
-          Find Workout Buddies
-        </button>
-
-        {/* Matched Buddies */}
-        {matchedBuddies.length > 0 && (
-          <div className="mt-8">
-            <h3 className="text-xl font-bold mb-4 text-center text-green-600">Matched Buddies</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {matchedBuddies.map((buddy, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-100 p-4 rounded-lg shadow-md text-center hover:bg-blue-50 transition"
-                >
-                  <p className="text-lg font-semibold">{buddy}</p>
-                  <p className="text-sm text-gray-500">Goal: {goal === 'Custom Goal' ? customGoal : goal}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold">Location</label>
+        <input
+          type="text"
+          name="location"
+          value={profile.location}
+          onChange={handleChange}
+          className="w-full p-2 border rounded-lg"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold">Fitness Goals</label>
+        <select
+          name="goals"
+          value={profile.goals}
+          onChange={handleChange}
+          className="w-full p-2 border rounded-lg"
+        >
+          <option value="">Select Goal</option>
+          <option value="Weight Loss">Weight Loss</option>
+          <option value="Muscle Gain">Muscle Gain</option>
+          <option value="Endurance">Endurance</option>
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold">Workout Preferences</label>
+        <div>
+          <label className="mr-4">
+            <input type="checkbox" value="Cardio" onChange={handlePreferences} /> Cardio
+          </label>
+          <label className="mr-4">
+            <input type="checkbox" value="Strength" onChange={handlePreferences} /> Strength
+          </label>
+          <label>
+            <input type="checkbox" value="Yoga" onChange={handlePreferences} /> Yoga
+          </label>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold">Extra Description</label>
+        <textarea
+          name="description"
+          value={profile.description}
+          onChange={handleChange}
+          className="w-full p-2 border rounded-lg"
+          rows="3"
+        />
+      </div>
+
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+        Save Profile
+      </button>
+    </form>
   );
 };
 
